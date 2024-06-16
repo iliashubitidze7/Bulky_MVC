@@ -5,8 +5,9 @@ using BulkyWeb.DataAccess.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace BulkyWeb.Controllers
+namespace BulkyWeb.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class CategoryController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -33,14 +34,15 @@ namespace BulkyWeb.Controllers
             //    ModelState.AddModelError("name", "the DisplayOrder cannont be exactly match the Name");
             //}
 
-            if (ModelState.IsValid) {
+            if (ModelState.IsValid)
+            {
                 _unitOfWork.Category.Add(obj);
                 _unitOfWork.Save();
                 TempData["success"] = "Category Created Successfully";
-                return RedirectToAction("index"); 
+                return RedirectToAction("index");
             }
-                  
-            return View();  
+
+            return View();
         }
 
         public IActionResult Edit(int? id)
@@ -50,9 +52,9 @@ namespace BulkyWeb.Controllers
                 return NotFound();
             }
 
-            Category? categoryFromDb = _unitOfWork.Category.Get(u=>u.Id==id);
+            Category? categoryFromDb = _unitOfWork.Category.Get(u => u.Id == id);
 
-            if(categoryFromDb == null)
+            if (categoryFromDb == null)
             {
                 return NotFound();
             }
@@ -98,7 +100,8 @@ namespace BulkyWeb.Controllers
         {
             Category? obj = _unitOfWork.Category.Get(u => u.Id == id);
 
-            if (obj == null) { 
+            if (obj == null)
+            {
                 return NotFound();
             }
             _unitOfWork.Category.Remove(obj);
