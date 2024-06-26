@@ -22,16 +22,20 @@ namespace BulkyWeb.Areas.Admin.Controllers
         {
             List<Product> objCategoryList = _unitOfWork.Product.GetAll().ToList();
 
-            IEnumerable<SelectListItem> CategoryList = _unitOfWork.Category.GetAll().Select(u=>new SelectListItem
-            {
-                Text = u.Name,
-                Value = u.Id.ToString()
-            });
+         
             return View(objCategoryList);
         }
 
         public IActionResult Create()
         {
+            IEnumerable<SelectListItem> CategoryList = _unitOfWork.Category.GetAll().Select(u => new SelectListItem
+            {
+                Text = u.Name,
+                Value = u.Id.ToString()
+            });
+
+            ViewBag.CategoryList = CategoryList;
+
             return View();
         }
 
@@ -41,6 +45,7 @@ namespace BulkyWeb.Areas.Admin.Controllers
             //if (obj.Name == obj.DisplayOrder.ToString()) {
             //    ModelState.AddModelError("name", "the DisplayOrder cannont be exactly match the Name");
             //}
+
 
             if (ModelState.IsValid)
             {
