@@ -14,10 +14,12 @@ namespace BulkyWeb.Areas.Admin.Controllers
     public class ProductController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public ProductController(IUnitOfWork unitOfWork)
+        public ProductController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
         {
             _unitOfWork = unitOfWork;
+            _webHostEnvironment = webHostEnvironment;
         }
         public IActionResult Index()
         {
@@ -58,9 +60,28 @@ namespace BulkyWeb.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Upsert(ProductVM productVM, IFormFile? file)
         {
-          
+            
             if (ModelState.IsValid)
             {
+                // root folders address
+                string wwwRootPath = _webHostEnvironment.WebRootPath;
+
+                if(file != null)
+                {
+                    //give image random name and get image extantion
+                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                    //combine for images final destination
+                    string productPath = Path.Combine(wwwRootPath, @"images\product");
+
+                    using(var fileStream = new FileStream(Path.Combine(productPath, fileName),FileMode.Create))
+                    {
+                        //copy file in wwwRoot\images\product
+                        file.CopyTo(fileStream);
+                    }
+                    productVM.Product.ImageUrl = @"\images\product\" + fileName;
+
+                }
+
                 _unitOfWork.Product.Add(productVM.Product);
                 _unitOfWork.Save();
                 TempData["success"] = "Product Created Successfully";
