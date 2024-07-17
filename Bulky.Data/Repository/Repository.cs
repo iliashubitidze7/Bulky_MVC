@@ -19,7 +19,6 @@ namespace Bulky.DataAccess.Repository
         {
             _db = db;
             this.dbSet = _db.Set<T>();
-
             //_db.Categoris = dbSet
             
         }
@@ -29,17 +28,37 @@ namespace Bulky.DataAccess.Repository
             dbSet.Add(entity);
         }
 
-        public T Get(Expression<Func<T, bool>> fileter)
+        public T Get(Expression<Func<T, bool>> fileter, string? includeroerties = null)
         {
             IQueryable<T> query = dbSet;
             query = query.Where(fileter);
+            if (!string.IsNullOrEmpty(includeroerties))
+            {
+                foreach (var includeProp in includeroerties.
+                    Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)) // include other models properties 
+                {
+                    query = query.Include(includeProp);
+                }
+            }
 
             return query.FirstOrDefault();
         }
 
-        public IEnumerable<T> GetAll()
+        //category , civertype
+        public IEnumerable<T> GetAll(string? includeroerties = null)
         {
+
             IQueryable<T> query = dbSet;
+
+            if (!string.IsNullOrEmpty(includeroerties))
+            {
+                foreach (var includeProp in includeroerties.
+                    Split(new char[] { ',' },StringSplitOptions.RemoveEmptyEntries))// include other models properties 
+                {
+                    query = query.Include(includeProp);
+                }
+            }
+
             return query.ToList();
         }
 
